@@ -1,134 +1,108 @@
-# QuillFin
+<p align="center">
+  <a href="https://savepoint.co.nz"><img src="Docs/assets/save-point-banner.png" alt="Save Point" width="480"></a>
+</p>
 
-*by Save Point*
+<h1 align="center">QuillFin</h1>
 
-A mobile-first notes app built around spaced repetition. Keep notes in subject
-folders, turn them into quiz questions with your own AI account, track practice
-problems LeetCode-style, and let the FSRS forgetting curve bring each one back
-right before you'd forget it, with a reminder when something's due.
+<p align="center">
+  A mobile-first notes app built around spaced repetition: notes, AI-generated quizzes and practice problems, scheduled with FSRS.<br>
+  Built and owned by <a href="https://savepoint.co.nz"><b>Save Point Limited</b></a>, New Zealand.
+</p>
 
-This is a from-scratch Flutter rewrite of an earlier Python/Tkinter desktop app
-([`Quiz-app-Ai`](https://github.com/LoganShmogan/Quiz-app-Ai)): it reuses that project's *ideas* (and,
-where useful, its algorithms ported to Dart), not its code. See
-`Docs/architecture.md` for how the two relate.
+<p align="center">
+  <a href="Docs/architecture.md">Docs</a> ·
+  <a href="Docs/running_locally.md">Running Locally</a> ·
+  <a href="Docs/quillfin_plan.md">Plan</a> ·
+  <a href="Docs/testing.md">Testing</a> ·
+  <a href="https://alotanotes.savepoint.co.nz">Web Build</a> ·
+  <a href="LICENSE">Licence</a>
+</p>
 
-- **Optional accounts and sync.** Sign in to a QuillFin account to sync
-  notes, questions and problems across devices, offline-first, and use
-  QuillFin's AI within your plan. Or continue on this device with no account
-  at all. Builds without cloud config are device-only (see
-  `Docs/accounts_and_sync.md`).
-- **Bring your own AI key.** Connect OpenAI (or any OpenAI-compatible
-  endpoint: OpenRouter, Groq, a local Ollama/LM Studio server) or Anthropic
-  directly from the Account tab. The app itself is never billed.
-- **Import your own files.** `.txt`, `.md`, `.pdf`, `.docx`, `.pptx`, single
-  file or bulk, with a preview/reorder step before anything is actually
-  imported.
-- **FSRS scheduling** (the algorithm Anki uses) for every quiz question and
-  problem. Answers are auto-graded and then rated Again/Hard/Good/Easy, each
-  button showing when that rating brings the item back. Target recall is
-  adjustable in Settings. See `Docs/scheduling_algorithm.md`.
-- **Problem tracker.** Log practice problems with difficulty, tags, link and
-  your solution; time and log each attempt; re-solve them on their own FSRS
-  schedule.
-- **Today dashboard and reminders.** What's due, reviews done today, average
-  recall and a 7-day forecast, plus an optional daily study notification
-  (scheduled by the OS on Android/iOS/macOS, shown while open on
-  Linux/Windows).
-- **Works at every size.** Phone-first with a bottom bar; a rail on tablets
-  and landscape phones; a sidebar, list-detail panes, a table view and
-  keyboard shortcuts on desktop. Light and dark themes. See
-  `Docs/quillfin_plan.md` section 5.
+---
 
-QuillFin is moving to accounts (Clerk), sync (Convex) and a Pro plan
-(Stripe), with a Next.js web app alongside this Flutter app. The plan,
-including per-screen-size layouts, is in `Docs/quillfin_plan.md`. The
-Convex backend is in `backend/` (see `Docs/backend.md`), and this app syncs
-with it when signed in. The web app is in `webapp/` (see `Docs/webapp.md`).
+> [!IMPORTANT]
+> QuillFin (formerly AlotaNotes) is in development and is Save Point's proprietary software. It is **not** open source. See [LICENSE](LICENSE).
 
-## Quick start
+## What it does
 
-Requires the Flutter SDK (this project was built against 3.47.2) and either a
-connected device, a running emulator, or `flutter build apk` for a standalone
-install.
+Keep notes in subject folders, turn them into quiz questions with your own AI account, track practice problems LeetCode-style, and let the FSRS forgetting curve bring each one back right before you'd forget it.
 
-```bash
+- **🧠 FSRS scheduling.** The algorithm Anki uses, for every quiz question and problem. Answers are auto-graded and then rated Again/Hard/Good/Easy, each button showing when that rating brings the item back. Target recall is adjustable. See [scheduling_algorithm.md](Docs/scheduling_algorithm.md).
+- **🤖 Bring your own AI key.** Connect OpenAI (or any OpenAI-compatible endpoint: OpenRouter, Groq, a local Ollama or LM Studio server) or Anthropic from the Account tab. The app itself is never billed.
+- **📥 Import your own files.** `.txt`, `.md`, `.pdf`, `.docx` and `.pptx`, single or in bulk, with a preview and reorder step before anything is imported.
+- **🧩 Problem tracker.** Log practice problems with difficulty, tags, link and your solution, time each attempt, and re-solve them on their own FSRS schedule.
+- **📅 Today dashboard and reminders.** What's due, reviews done today, average recall and a 7-day forecast, plus an optional daily study notification.
+- **☁️ Optional accounts and sync.** Sign in to sync notes, questions and problems across devices, offline-first. Or stay on this device with no account at all. See [accounts_and_sync.md](Docs/accounts_and_sync.md).
+- **📱 Works at every size.** A bottom bar on phones, a rail on tablets, and a sidebar, list-detail panes, a table view and keyboard shortcuts on desktop. Light and dark themes.
+
+QuillFin is moving to accounts (Clerk), sync (Convex) and a Pro plan (Stripe), with a Next.js web app alongside this Flutter app. The Convex backend is in [`backend/`](Docs/backend.md) and the web app is in [`webapp/`](Docs/webapp.md).
+
+This is a from-scratch Flutter rewrite of an earlier Python/Tkinter desktop app, [`Quiz-app-Ai`](https://github.com/LoganShmogan/Quiz-app-Ai). It reuses that project's ideas and, where useful, its algorithms ported to Dart, but not its code.
+
+## Quick start (Save Point staff)
+
+Requires the Flutter SDK (built against 3.47.2) and a connected device, a running emulator, or `flutter build apk` for a standalone install.
+
+```sh
 flutter pub get
 flutter run
 ```
 
-See `Docs/running_locally.md` for full setup, first-run notes, and where data
-lives on-device.
+See [running_locally.md](Docs/running_locally.md) for full setup, first-run notes and where data lives on the device.
 
 ## Testing
 
-```bash
+```sh
 flutter analyze
 flutter test
+flutter test --coverage && dart run tool/check_coverage.dart   # checks 100% line coverage of lib/
+flutter test integration_test -d linux                         # end-to-end on Linux desktop
 ```
 
-394 tests covering pure logic (scheduling, grading, text extraction), storage
-repositories (real in-memory SQLite), AI providers (HTTP-mocked, no real
-network/API key needed), sign-in and sync (two devices through an in-memory
-backend), and widget tests for every screen (real
-`tester.tap()` interaction, not device input simulation). Line coverage of
-`lib/` is 100%; `flutter test --coverage && dart run tool/check_coverage.dart`
-checks it. See `Docs/testing.md` for why the device-input distinction
-matters: it's the difference between a test that's actually reliable and one
-that isn't, and this project hit that difference the hard way once already.
+| Suite | Tests | Coverage |
+|---|---|---|
+| Flutter app | 394, from pure logic to widget tests for every screen | 100% of `lib/` |
+| Convex backend (Vitest, convex-test) | 131, including FSRS parity with the app | 100% of `backend/convex/` |
+| Web app (Vitest, Testing Library) | 31 | |
 
-There's also one end-to-end test that runs the real app on Linux desktop
-(real SQLite file, real settings and keychain, real HTTP to a local fake AI
-server), from sign-in through quiz, problem tracking, import and export:
+The end-to-end test runs the real app on Linux desktop (real SQLite file, settings and keychain, real HTTP to a local fake AI server), from sign-in through quiz, problem tracking, import and export. The backend and web suites run from the repo root with Node 24:
 
-```bash
-flutter test integration_test -d linux
-```
-
-It needs the Linux desktop toolchain installed; see `Docs/testing.md`.
-
-The Convex backend and the web app have their own suites, run from the repo
-root with Node 24. The backend has 131 tests (Vitest and convex-test) with
-100% line coverage of `backend/convex/`, including FSRS parity with this
-app's scheduler. The web app has 31 (Vitest and Testing Library):
-
-```bash
+```sh
 npm install
 npm run backend:test
 npm run web:test
 ```
 
+[testing.md](Docs/testing.md) explains why widget tests use `tester.tap()` rather than simulated device input, and the ADB-tap lesson behind that.
+
 ## Documentation
 
-Everything needed to understand and extend this codebase lives in `Docs/`:
+Everything needed to understand and extend this codebase is in **[Docs/](Docs/)**. Save Point branded PDFs are in `Docs/pdf/`, rebuilt with `dart run tool/build_docs.dart`.
 
-- `architecture.md`, module map, layering, how this relates to the original
-  Python desktop app
-- `database_schema.md`, the SQLite schema
-- `scheduling_algorithm.md`, FSRS scheduling, ratings and the v1 migration
-- `ai_providers.md`, the AI provider abstraction (OpenAI/Anthropic), how to
-  add a third
-- `accounts_and_sync.md`, signing in from the app, the local sync columns
-  and triggers, the sync engine, Settings > Sync / Plan, build config
-- `webapp.md`, the Next.js web app: screens, layouts, how it shares the
-  backend's code, tests
-- `backend.md`, the Convex backend: sync protocol, plans and usage, AI
-  generation, billing, environment variables
-- `setup_guide.md`, creating the Convex, Clerk, Stripe and Anthropic
-  accounts and keys
-- `quillfin_plan.md`, the production plan: architecture, sync, pricing,
-  layouts per screen size, phases
-- `gui_theming.md`, the (placeholder) QuillFin brand tokens and theme
-- `testing.md`, how to run tests and check coverage, the test fakes and
-  patterns, what's not covered, and the ADB-tap
-  cautionary tale behind why widget tests are the trustworthy path here
-- `running_locally.md`, setup, first run, where data lives, known Android
-  build gotchas
-- `packaging.md`, the Windows installer / Linux AppImage release build,
-  triggered automatically on a GitHub release
-- `hosting.md`, the web build in Docker, and putting it behind a reverse
-  proxy at alotanotes.savepoint.co.nz
-- `pdf/`, the docs above as Save Point branded PDFs, rebuilt with
-  `dart run tool/build_docs.dart`
-- `future_work.md`, known, deliberate deferrals: what's blocked on things
-  only a human can provide (developer accounts, real devices, brand assets),
-  and what's just not built yet
+| Doc | What's in it |
+|---|---|
+| [architecture.md](Docs/architecture.md) | Module map, layering, and how this relates to the original Python app |
+| [database_schema.md](Docs/database_schema.md) | The SQLite schema |
+| [scheduling_algorithm.md](Docs/scheduling_algorithm.md) | FSRS scheduling, ratings and the v1 migration |
+| [ai_providers.md](Docs/ai_providers.md) | The AI provider abstraction and how to add a third |
+| [accounts_and_sync.md](Docs/accounts_and_sync.md) | Signing in, sync columns and triggers, the sync engine, build config |
+| [webapp.md](Docs/webapp.md) | The Next.js web app: screens, layouts, shared backend code, tests |
+| [backend.md](Docs/backend.md) | The Convex backend: sync protocol, plans, AI generation, billing, env vars |
+| [setup_guide.md](Docs/setup_guide.md) | Creating the Convex, Clerk, Stripe and Anthropic accounts and keys |
+| [quillfin_plan.md](Docs/quillfin_plan.md) | The production plan: architecture, sync, pricing, layouts, phases |
+| [gui_theming.md](Docs/gui_theming.md) | The (placeholder) QuillFin brand tokens and theme |
+| [testing.md](Docs/testing.md) | Running tests, coverage, fakes and patterns, what's not covered |
+| [running_locally.md](Docs/running_locally.md) | Setup, first run, where data lives, Android build gotchas |
+| [packaging.md](Docs/packaging.md) | Windows installer and Linux AppImage, built on each GitHub release |
+| [hosting.md](Docs/hosting.md) | The web build in Docker behind a reverse proxy at alotanotes.savepoint.co.nz |
+| [future_work.md](Docs/future_work.md) | Deliberate deferrals and what's not built yet |
+
+## Ownership
+
+**QuillFin** is © 2026 Save Point Limited, a New Zealand company (company number 9392145). All rights reserved.
+
+- Website: [savepoint.co.nz](https://savepoint.co.nz)
+- General enquiries: [contact@savepoint.co.nz](mailto:contact@savepoint.co.nz)
+- Support, privacy and security: [support@savepoint.co.nz](mailto:support@savepoint.co.nz)
+
+"Save Point" and the Save Point flag logo are the property of Save Point Limited. OpenAI, Anthropic, Anki, Clerk, Convex and Stripe are trademarks of their respective owners. This project is not affiliated with or endorsed by any of them.
