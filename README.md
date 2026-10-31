@@ -15,6 +15,7 @@
   <a href="Docs/quillfin_plan.md">Plan</a> ·
   <a href="Docs/testing.md">Testing</a> ·
   <a href="https://alotanotes.savepoint.co.nz">Web Build</a> ·
+  <a href="SECURITY.md">Security</a> ·
   <a href="LICENSE">Licence</a>
 </p>
 
@@ -74,6 +75,39 @@ npm run web:test
 ```
 
 [testing.md](Docs/testing.md) explains why widget tests use `tester.tap()` rather than simulated device input, and the ADB-tap lesson behind that.
+
+## Project layout
+
+```
+quillfin/
+├── lib/                    # Flutter app (Android, iOS, desktop, web)
+│   ├── main.dart  app.dart
+│   ├── screens/  layout/  theme/        # UI
+│   ├── core/               # FSRS scheduling, grading, models
+│   ├── storage/            # Local SQLite database
+│   ├── sync/  auth/        # Offline-first sync with Convex, Clerk sign-in
+│   ├── ai/                 # AI providers (your own OpenAI / Anthropic key)
+│   └── config/  services/  settings/
+├── backend/                # Convex backend: sync protocol, plans, AI generation, billing
+│   ├── convex/
+│   └── tests/
+├── webapp/                 # Next.js web app
+│   ├── app/  components/  lib/  public/  test/
+├── test/  integration_test/   # Flutter unit, widget and integration tests
+├── tool/                   # build_docs.dart, check_coverage.dart, FSRS parity fixture
+├── config/example.json     # Build config template (real config/*.json is git-ignored)
+├── Docs/                   # Documentation, plus branded PDFs in Docs/pdf/
+├── docker/  Dockerfile  docker-compose.yml   # Web build behind nginx
+├── .github/workflows/      # backend.yml, webapp.yml, build.yml (release installers)
+├── android/  ios/  linux/  macos/  windows/  web/   # Flutter platform runners
+├── pubspec.yaml
+├── LICENSE                 # Proprietary, all rights reserved
+└── SECURITY.md
+```
+
+## Secrets
+
+No keys live in this repo. Server-side keys (`ANTHROPIC_API_KEY`, `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, Clerk settings) are set on the Convex deployment with `npx convex env set`; see [backend.md](Docs/backend.md). Local settings go in `backend/.env.local`, `webapp/.env.local` (from `webapp/.env.example`) and `config/*.json` (from `config/example.json`), all git-ignored, as are Android keystores and `key.properties`. A user's own AI key is kept in the device's secure storage and sent only to their AI provider, never to Save Point. See [SECURITY.md](SECURITY.md).
 
 ## Documentation
 

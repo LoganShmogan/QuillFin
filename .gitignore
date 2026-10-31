@@ -56,3 +56,13 @@ node_modules/
 # Build config with real (publishable) values; see config/example.json
 /config/*.json
 !/config/example.json
+
+# Secrets: never commit these
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.jks
+*.keystore
+key.properties
