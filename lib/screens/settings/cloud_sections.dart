@@ -89,11 +89,13 @@ class SyncPanel extends StatelessWidget {
 class PlanPanel extends StatefulWidget {
   final CloudSession session;
 
-  /// Whether this is an iOS build, where Apple's rules keep upgrading out of
-  /// the app (Docs/quillfin_plan.md §2). Overridable for tests.
-  final bool? isIOS;
+  /// Whether this is an App Store or Play Store build (iOS or Android). Both
+  /// stores require their own billing for digital subscriptions and forbid
+  /// pointing to another way to pay, so these builds only show the plan
+  /// (Docs/quillfin_plan.md §2). Overridable for tests.
+  final bool? storeBuild;
 
-  const PlanPanel({super.key, required this.session, this.isIOS});
+  const PlanPanel({super.key, required this.session, this.storeBuild});
 
   @override
   State<PlanPanel> createState() => _PlanPanelState();
@@ -103,7 +105,7 @@ class _PlanPanelState extends State<PlanPanel> with WidgetsBindingObserver {
   late Future<PlanInfo> _plan = widget.session.plan();
   bool _opening = false;
 
-  bool get _isIOS => widget.isIOS ?? (!kIsWeb && Platform.isIOS);
+  bool get _storeBuild => widget.storeBuild ?? (!kIsWeb && (Platform.isIOS || Platform.isAndroid));
 
   @override
   void initState() {
@@ -181,7 +183,7 @@ class _PlanPanelState extends State<PlanPanel> with WidgetsBindingObserver {
             (true, final DateTime end, true) => 'Ends on ${_date(end)}',
             (true, final DateTime end, false) => 'Renews on ${_date(end)}${plan.interval == null ? '' : ' (${plan.interval}ly)'}',
             (true, _, _) => 'Active',
-            _ => 'Your own AI key is always unlimited. Pro raises the allowance on QuillFin\'s AI.',
+            _ => 'Your own AI key is always unlimited.',
           }),
         ),
         Padding(
@@ -193,7 +195,7 @@ class _PlanPanelState extends State<PlanPanel> with WidgetsBindingObserver {
           child: LinearProgressIndicator(value: usage, color: usage >= 1 ? context.brand.danger : null),
         ),
         const SizedBox(height: 12),
-        if (plan.isPro && !_isIOS)
+        if (plan.isPro && !_storeBuild)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: OutlinedButton(
@@ -201,7 +203,7 @@ class _PlanPanelState extends State<PlanPanel> with WidgetsBindingObserver {
               child: const Text('Manage plan'),
             ),
           )
-        else if (!plan.isPro && plan.upgradeAvailable && !_isIOS)
+        else if (!plan.isPro && plan.upgradeAvailable && !_storeBuild)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Wrap(
@@ -218,9 +220,7 @@ class _PlanPanelState extends State<PlanPanel> with WidgetsBindingObserver {
                 ),
               ],
             ),
-          )
-        else if (_isIOS)
-          const ListTile(subtitle: Text('Plans are managed on the QuillFin website.')),
+          ),
       ],
     );
   }

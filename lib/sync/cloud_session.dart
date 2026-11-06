@@ -69,6 +69,10 @@ class CloudSession {
     return Uri.parse((result as Map)['url'] as String);
   }
 
+  /// Deletes the account for good: cancels Pro, removes the sign-in and
+  /// every synced row (backend/convex/account.ts).
+  Future<void> deleteAccount() => client.action('account:deleteAccount');
+
   /// Stripe's Billing Portal, to change or cancel the plan.
   Future<Uri> portalUrl() async {
     final result = await client.action('stripeActions:createPortalSession');

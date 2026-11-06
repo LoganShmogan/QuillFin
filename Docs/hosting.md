@@ -5,7 +5,7 @@ the repo root builds it and serves the result as static files with nginx.
 The homelab setup is:
 
 ```
-browser ──https──▶ Cloudflare Tunnel ──http──▶ Caddy :80 ──http──▶ alotanotes:80
+browser ──https──▶ Cloudflare Tunnel ──http──▶ Caddy :80 ──http──▶ quillfin:80
                    (DNS + TLS for            (~/caddy, Docker     (this repo's
                     *.savepoint.co.nz)        Compose)             container)
 ```
@@ -42,8 +42,8 @@ prebuilt image for it). Later builds reuse that layer.
 Add this to `~/caddy/Caddyfile`:
 
 ```
-http://alotanotes.savepoint.co.nz {
-    reverse_proxy alotanotes:80
+http://quillfin.savepoint.co.nz {
+    reverse_proxy quillfin:80
 }
 ```
 
@@ -57,7 +57,7 @@ cd ~/caddy && docker compose exec caddy caddy reload --config /etc/caddy/Caddyfi
 
 The `http://` prefix matters. Without it, Caddy would try to get its own
 certificate for the domain, which fails behind the tunnel and isn't needed:
-Cloudflare already terminates TLS. `alotanotes` resolves through Docker's
+Cloudflare already terminates TLS. `quillfin` resolves through Docker's
 DNS on the `web` network, and `80` is the port nginx listens on inside the
 container.
 
@@ -84,7 +84,7 @@ static files; **all data lives in each browser**:
   Anthropic both allow that (Anthropic via the
   `anthropic-dangerous-direct-browser-access` header the app sends). A
   local Ollama/LM Studio endpoint has to allow the site's origin itself,
-  e.g. `OLLAMA_ORIGINS=https://alotanotes.savepoint.co.nz`.
+  e.g. `OLLAMA_ORIGINS=https://quillfin.savepoint.co.nz`.
 - The Flutter web build is device-only: it has no account sign-in
   (accounts on the web belong to the Next.js app, Phase 4). Nothing on the
   server needs protecting. Anyone who can reach the URL gets their own empty

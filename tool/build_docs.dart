@@ -194,7 +194,7 @@ String _page(String title, String body, Uri logo, String date) => '''
     <span style="background:var(--purple)"></span><span style="background:var(--yellow)"></span><span style="background:var(--blue)"></span><span style="background:var(--green)"></span>
   </div>
   <h1>${_escape(title)}</h1>
-  <p class="byline">AlotaNotes Quiz App · Prepared for $_preparedFor · $date</p>
+  <p class="byline">QuillFin · Prepared for $_preparedFor · $date</p>
 </header>
 $body
 </body>

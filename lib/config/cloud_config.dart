@@ -6,7 +6,7 @@
 library;
 
 class CloudConfig {
-  /// Clerk's Frontend API host, e.g. `clerk.quillfin.app` or
+  /// Clerk's Frontend API host, e.g. `clerk.quillfin.savepoint.co.nz` or
   /// `xyz.clerk.accounts.dev`. A scheme is optional.
   final String clerkDomain;
 

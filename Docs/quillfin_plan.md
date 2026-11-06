@@ -360,4 +360,26 @@ Still open from Phase 3:
 Not built for the web (the app has them): file import, your own AI key, data
 export, and offline use. The web is online-only by design.
 
-**Next: Phase 5, ship readiness.**
+**Phase 5 (ship readiness): in progress, 2026-11-06.** See `store_listing.md`.
+
+- **Account deletion** (both stores require it): `account:deleteAccount`
+  deletes the Stripe customer (cancelling Pro), then the Clerk user, then
+  every row in batches. It is offered under Account in the app and on the
+  web account page.
+- **Legal**: terms, subscriptions, privacy, cookies and account deletion at
+  savepoint.co.nz/legal/quillfin, linked from the app and the web app.
+  Minimum age 13.
+- **Store builds sell nothing**: iOS and Android show the plan but no
+  upgrade or manage buttons, and no pointer to the website. This replaces
+  the §2 idea of linking Android to Stripe, which Play's billing policy
+  doesn't allow.
+- **Icons and graphics** for every platform from the brand SVG
+  (`tool/build_icons.mjs`), Play release signing from `key.properties`,
+  and `ITSAppUsesNonExemptEncryption` on iOS.
+- **Hosting**: the web build moved from alotanotes.savepoint.co.nz to
+  quillfin.savepoint.co.nz.
+
+Still open: the store accounts and listings and production keys. The
+iPhone release comes later (decided 2026-11-06): Android, the web and
+desktop launch first, and Pro gets Apple In-App Purchase before the App
+Store release.

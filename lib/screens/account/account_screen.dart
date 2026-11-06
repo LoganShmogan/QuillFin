@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../ai/provider_factory.dart';
 import '../../auth/auth_service.dart';
@@ -7,10 +8,15 @@ import '../../layout/breakpoints.dart';
 import '../../services/reminder_service.dart';
 import '../../settings/app_settings.dart';
 import '../../sync/cloud_session.dart';
+import '../../sync/convex_client.dart';
 import '../../theme/widgets.dart';
 import '../login/login_screen.dart';
 
 const _apiKeyStorageKey = 'ai_api_key';
+
+/// QuillFin's terms and privacy policy, on the Save Point site. The stores
+/// require both to be reachable from inside the app.
+const legalUrl = 'https://savepoint.co.nz/legal/quillfin';
 
 /// The QuillFin account (or device-only session) and the AI connection:
 /// provider, model and your own API key. Signed in without a key, question
@@ -107,6 +113,40 @@ class _AccountScreenState extends State<AccountScreen> {
     await _leave();
   }
 
+  /// Deleting the account is permanent, so it asks first, then removes this
+  /// device's copy too and goes back to sign-in.
+  Future<void> _deleteAccount() async {
+    final session = CloudScope.maybeOf(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Delete your account?'),
+        content: const Text(
+          'This permanently deletes your QuillFin account and everything synced to it: notes, questions, '
+          'problems and review history, on every device. A Pro plan is cancelled straight away. '
+          'This cannot be undone. Export your data first (Settings > Your data) to keep a copy.',
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete forever'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    try {
+      await session.deleteAccount();
+    } on ConvexException catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+      return;
+    }
+    await session.sync.store.deleteLocalData();
+    await _leave();
+  }
+
   Future<void> _signInToSync() => _leave();
 
   Future<void> _leave() async {
@@ -197,6 +237,26 @@ class _AccountScreenState extends State<AccountScreen> {
                   ),
                   const SizedBox(height: 32),
                   OutlinedButton(onPressed: _signOut, child: const Text('Sign out')),
+                  if (CloudScope.maybeOf(context) != null)
+                    TextButton(
+                      style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.error),
+                      onPressed: _deleteAccount,
+                      child: const Text('Delete account'),
+                    ),
+                  const SizedBox(height: 16),
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    children: [
+                      TextButton(
+                        onPressed: () => launchUrl(Uri.parse('$legalUrl#terms')),
+                        child: const Text('Terms of Service'),
+                      ),
+                      TextButton(
+                        onPressed: () => launchUrl(Uri.parse('$legalUrl#privacy')),
+                        child: const Text('Privacy Policy'),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),

@@ -156,9 +156,12 @@ failing every push, and Settings > Sync says how many.
 - **Settings > Plan**: Free or Pro, this month's use of QuillFin's AI,
   renewal or end date, **Upgrade monthly / yearly** (Stripe Checkout) or
   **Manage plan** (Billing Portal), opened in the browser. The plan reloads
-  when you come back to the app. On iOS, upgrading isn't offered in the app
-  because of Apple's in-app purchase rule; it says plans are managed on the
-  website.
+  when you come back to the app. The iOS and Android store builds only show
+  the plan: both stores require their own billing for subscriptions and
+  forbid pointing elsewhere to pay (`store_listing.md`, Billing).
+- **Account > Delete account**: after a confirmation, `account:deleteAccount`
+  cancels Pro, deletes the Clerk user and every synced row, then the app
+  deletes this device's copy and returns to sign-in.
 - **Account**: the account's name and email. **Sign out** first pushes
   what it can, then asks whether to keep a copy on this device or delete it
   from this device. A device-only session gets **Sign in to sync** when the

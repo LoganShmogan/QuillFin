@@ -14,7 +14,7 @@
   <a href="Docs/running_locally.md">Running Locally</a> ·
   <a href="Docs/quillfin_plan.md">Plan</a> ·
   <a href="Docs/testing.md">Testing</a> ·
-  <a href="https://alotanotes.savepoint.co.nz">Web Build</a> ·
+  <a href="https://quillfin.savepoint.co.nz">Web Build</a> ·
   <a href="SECURITY.md">Security</a> ·
   <a href="LICENSE">Licence</a>
 </p>
@@ -22,7 +22,7 @@
 ---
 
 > [!IMPORTANT]
-> QuillFin (formerly AlotaNotes) is in development and is Save Point's proprietary software. It is **not** open source. See [LICENSE](LICENSE).
+> QuillFin is in development and is Save Point's proprietary software. It is **not** open source. See [LICENSE](LICENSE).
 
 ## What it does
 
@@ -123,12 +123,13 @@ Everything needed to understand and extend this codebase is in **[Docs/](Docs/)*
 | [webapp.md](Docs/webapp.md) | The Next.js web app: screens, layouts, shared backend code, tests |
 | [backend.md](Docs/backend.md) | The Convex backend: sync protocol, plans, AI generation, billing, env vars |
 | [setup_guide.md](Docs/setup_guide.md) | Creating the Convex, Clerk, Stripe and Anthropic accounts and keys |
+| [store_listing.md](Docs/store_listing.md) | Google Play and App Store submission: listing, privacy answers, signing, and the plan for iPhone |
 | [quillfin_plan.md](Docs/quillfin_plan.md) | The production plan: architecture, sync, pricing, layouts, phases |
 | [gui_theming.md](Docs/gui_theming.md) | The (placeholder) QuillFin brand tokens and theme |
 | [testing.md](Docs/testing.md) | Running tests, coverage, fakes and patterns, what's not covered |
 | [running_locally.md](Docs/running_locally.md) | Setup, first run, where data lives, Android build gotchas |
 | [packaging.md](Docs/packaging.md) | Windows installer and Linux AppImage, built on each GitHub release |
-| [hosting.md](Docs/hosting.md) | The web build in Docker behind a reverse proxy at alotanotes.savepoint.co.nz |
+| [hosting.md](Docs/hosting.md) | The web build in Docker behind a reverse proxy at quillfin.savepoint.co.nz |
 | [future_work.md](Docs/future_work.md) | Deliberate deferrals and what's not built yet |
 
 ## Ownership

@@ -48,6 +48,18 @@ expected.
    npx convex env set CLERK_OAUTH_CLIENT_ID <client id>
    npx convex dev --once
    ```
+5. **Account deletion** (both app stores require it): set Clerk's secret
+   key (Configure > API keys) on Convex, so `account:deleteAccount` can
+   delete the Clerk user after cancelling Stripe and before wiping the data:
+
+   ```bash
+   npx convex env set CLERK_SECRET_KEY sk_test_...
+   ```
+
+   Then turn off Clerk's own **Allow users to delete their accounts**
+   setting, so the web app's account page only offers QuillFin's
+   **Delete my account**: Clerk's button would delete the sign-in but leave
+   the synced data and any Pro subscription behind.
 
 ## 3. Anthropic (AI generation on QuillFin's key)
 
@@ -87,7 +99,7 @@ Do this in **test mode** first. Repeat it in live mode before launch.
    npx convex env set STRIPE_WEBHOOK_SECRET whsec_...
    npx convex env set STRIPE_PRICE_PRO_MONTHLY price_...
    npx convex env set STRIPE_PRICE_PRO_YEARLY price_...
-   npx convex env set SITE_URL https://quillfin.app
+   npx convex env set SITE_URL https://quillfin.savepoint.co.nz
    ```
 
 ## 5. Check it
@@ -159,5 +171,19 @@ Do this in **test mode** first. Repeat it in live mode before launch.
 ## Production
 
 `npx convex deploy` creates the production deployment, which has its own
-environment variables: set them all again there, with Clerk's production
-instance and Stripe's live-mode values. Never commit any of these values.
+environment variables: set them all again there (`CLERK_JWT_ISSUER_DOMAIN`,
+`CLERK_OAUTH_CLIENT_ID`, `CLERK_SECRET_KEY`, `ANTHROPIC_API_KEY`, the four
+`STRIPE_*` values and `SITE_URL=https://quillfin.savepoint.co.nz`), with
+Clerk's production instance and Stripe's live-mode values. Never commit any
+of these values.
+
+The web app lives at **quillfin.savepoint.co.nz**. Clerk's production
+instance asks for a few CNAME records on that domain. Add them in Cloudflare
+as **DNS only** (grey cloud); specific records win over the
+`*.savepoint.co.nz` wildcard that sends everything else to loganserver. When
+the Next.js app is deployed, point `quillfin.savepoint.co.nz` at it (a CNAME
+for Vercel, or a container behind Caddy on loganserver) in place of today's
+device-only Flutter web build (`hosting.md`).
+
+Store submission (listings, signing, privacy answers) is covered in
+`store_listing.md`.

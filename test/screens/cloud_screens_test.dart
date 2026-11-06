@@ -243,9 +243,11 @@ void main() {
     setUp(() async => db = await openTestDatabase());
     tearDown(() => db.close());
 
-    Future<CloudSession> show(WidgetTester tester, {bool isIOS = false}) async {
+    Future<CloudSession> show(WidgetTester tester, {bool storeBuild = false}) async {
       final session = await sessionFor(db);
-      await tester.pumpWidget(withCloud(session, Scaffold(body: SingleChildScrollView(child: PlanPanel(session: session, isIOS: isIOS)))));
+      await tester.pumpWidget(
+        withCloud(session, Scaffold(body: SingleChildScrollView(child: PlanPanel(session: session, storeBuild: storeBuild)))),
+      );
       await waitForLoad(tester);
       return session;
     }
@@ -304,11 +306,13 @@ void main() {
       });
     });
 
-    testWidgets('on iOS, plans are managed on the website', (tester) async {
+    testWidgets('store builds show the plan with no way to buy or manage it', (tester) async {
       await tester.runAsync(() async {
-        await show(tester, isIOS: true);
+        server.billing['user_alice'] = FakeConvex.proPlan();
+        await show(tester, storeBuild: true);
+        expect(find.text('QuillFin Pro'), findsOneWidget);
+        expect(find.text('Manage plan'), findsNothing);
         expect(find.text('Upgrade monthly'), findsNothing);
-        expect(find.text('Plans are managed on the QuillFin website.'), findsOneWidget);
       });
     });
 
@@ -364,6 +368,55 @@ void main() {
         expect(server.rows('user_alice', 'folders'), hasLength(1));
         expect(await db.query('folders'), hasLength(1));
         expect(await auth.currentUser(), isNull);
+      });
+    });
+
+    testWidgets('deleting the account asks first, then wipes this device and signs out', (tester) async {
+      await tester.runAsync(() async {
+        await FoldersRepo(db).create('Bio');
+        var deletes = 0;
+        server.handlers['account:deleteAccount'] = (_, _) {
+          deletes++;
+          return null;
+        };
+        final auth = await show(tester);
+        Future<void> tapDelete() async {
+          await tester.scrollUntilVisible(find.text('Delete account'), 200, scrollable: find.byType(Scrollable).first);
+          await tester.tap(find.text('Delete account'));
+          await settleNavigation(tester);
+        }
+
+        await tapDelete();
+        await tester.tap(find.text('Cancel'));
+        await settleNavigation(tester);
+        expect(deletes, 0);
+
+        server.failNext['account:deleteAccount'] = {'code': 'DELETION_FAILED', 'message': "Couldn't delete your sign-in."};
+        await tapDelete();
+        await tester.tap(find.text('Delete forever'));
+        await pumpUntil(tester, () => find.text("Couldn't delete your sign-in.").evaluate().isNotEmpty);
+        expect(await db.query('folders'), hasLength(1));
+
+        await tapDelete();
+        await tester.tap(find.text('Delete forever'));
+        await pumpUntil(tester, () => find.byType(LoginScreen).evaluate().isNotEmpty);
+        expect(deletes, 1);
+        expect(await db.query('folders'), isEmpty);
+        expect(await auth.currentUser(), isNull);
+      });
+    });
+
+    testWidgets('links to the terms and privacy policy', (tester) async {
+      await tester.runAsync(() async {
+        await show(tester);
+        for (final label in ['Terms of Service', 'Privacy Policy']) {
+          await tester.scrollUntilVisible(find.text(label), 200, scrollable: find.byType(Scrollable).first);
+          await tester.ensureVisible(find.text(label));
+          await tester.pump();
+          await tester.tap(find.text(label));
+        }
+        await pumpUntil(tester, () => launcher.launched.length == 2);
+        expect(launcher.launched, ['$legalUrl#terms', '$legalUrl#privacy']);
       });
     });
 

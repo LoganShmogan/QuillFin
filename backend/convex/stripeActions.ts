@@ -8,7 +8,7 @@ import { action, internalAction } from "./_generated/server";
 import { subscriptionIdOf, subscriptionRecord } from "./stripeSync";
 import { requireIdentity } from "./users";
 
-function stripeClient(): Stripe {
+export function stripeClient(): Stripe {
   const key = process.env.STRIPE_SECRET_KEY;
   if (!key) throw new ConvexError({ code: "BILLING_NOT_CONFIGURED", message: "Billing isn't set up on this server yet." });
   return new Stripe(key);

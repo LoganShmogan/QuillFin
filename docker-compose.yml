@@ -1,10 +1,10 @@
 services:
-  alotanotes:
+  quillfin:
     build: .
-    image: alotanotes-web
-    container_name: alotanotes
+    image: quillfin-web
+    container_name: quillfin
     restart: unless-stopped
-    # No published ports: Caddy reaches this container as alotanotes:80 over
+    # No published ports: Caddy reaches this container as quillfin:80 over
     # the shared `web` network. See Docs/hosting.md.
     networks:
       - web
